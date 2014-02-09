@@ -4,6 +4,14 @@ and spam.
 AttackProtector
 ===============
 
+Improvements over [ProgVal/Supybot-plugins/AttackProtector](https://github.com/ProgVal/Supybot-plugins/tree/master/AttackProtector):
+------------------------------------------------------------
+
+* Event databases uses [redis](http://redis.io/) instead of an in-supybot
+  collection.
+* Event expiration leverages redis's [EXPIRE](http://redis.io/commands/expire) 
+  so each event addition no longer needs to scan O(n) keys.
+
 Detection types
 ---------------
 
