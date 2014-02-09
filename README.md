@@ -1,17 +1,19 @@
+[![Build Status](https://travis-ci.org/bnrubin/AttackProtector.png?branch=master)](https://travis-ci.org/bnrubin/AttackProtector)
+
 This plugin aims to provide a highly configurable protection against flood
 and spam.
 
 AttackProtector
 ===============
 
-Improvements over [ProgVal/Supybot-plugins/AttackProtector](https://github.com/ProgVal/Supybot-plugins/tree/master/AttackProtector):
+Improvements over ProgVal's [AttackProtector](https://github.com/ProgVal/Supybot-plugins/tree/master/AttackProtector):
 ------------------------------------------------------------
 
 * Event databases uses [redis](http://redis.io/) instead of an in-supybot
   collection.
 * Event expiration leverages redis's [EXPIRE](http://redis.io/commands/expire) 
   so each event addition no longer needs to scan O(n) keys.
-* Ban host ip for freenode style gateway cloaks
+* Ban host ip for freenode style gateway cloaks.
 
 Detection types
 ---------------
