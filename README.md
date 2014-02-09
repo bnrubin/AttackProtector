@@ -9,11 +9,11 @@ AttackProtector
 Improvements over ProgVal's [AttackProtector](https://github.com/ProgVal/Supybot-plugins/tree/master/AttackProtector):
 ------------------------------------------------------------
 
-* Event databases uses [redis](http://redis.io/) instead of an in-supybot
+* Event database uses [redis](http://redis.io/) instead of an in-supybot
   collection.
 * Event expiration leverages redis's [EXPIRE](http://redis.io/commands/expire) 
   so each event addition no longer needs to scan O(n) keys.
-* Ban host ip for freenode style gateway cloaks.
+* Ability to ban host ip for freenode style gateway cloaks.
 
 Detection types
 ---------------
