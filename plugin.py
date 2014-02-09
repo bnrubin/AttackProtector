@@ -65,7 +65,7 @@ def makeBanmask(hostmask):
     if p:
         ip = p.group(1)
         (nick, user, host) = ircutils.splitHostmask(hostmask)
-        hostmask = '%s!%s@%s' (nick, user, ip)
+        hostmask = '%s!%s@%s' % (nick, user, ip)
     
     return banmaskstyle.makeBanmask(hostmask)
 
