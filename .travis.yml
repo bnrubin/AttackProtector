@@ -4,10 +4,10 @@ python:
     #  - "3.2"
     #  - "3.3"
     #  - "pypy"
-# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
+services:
+    - redis-server
 install:
     - 'pip install -r requirements.txt' 
-# command to run tests, e.g. python setup.py test
 script:
   - echo $TRAVIS_PYTHON_VERSION
   - cd .. && supybot-test AttackProtector

@@ -32,6 +32,7 @@ import re
 import time
 import functools
 
+import redis
 import supybot.conf as conf
 import supybot.utils as utils
 import supybot.ircdb as ircdb
@@ -61,7 +62,7 @@ class AttackProtectorDatabaseItem:
         self.prefix = prefix
         self.channel = channel
         self.time = time.time()
-        self.protector = protector
+        self.protector = protector.registryValue(kind + '.detection', channel)
         value = protector.registryValue('%s.detection' % kind, channel)
         self.irc = irc
         self.msg = msg
@@ -70,41 +71,32 @@ class AttackProtectorDatabaseItem:
 
 class AttackProtectorDatabase:
     def __init__(self):
-        self._collections = {}
+        self._redis = redis.StrictRedis()
 
     def add(self, item):
-        if item.kind not in self._collections:
-            self._collections.update({item.kind: []})
-        self._collections[item.kind].append(item)
-        self.refresh()
+        key = '%s:%s:%s' % (item.kind, item.channel, item.prefix)
+        value = {'msg': item.msg}
+        pipe = self._redis.pipeline()
+        pipe.rpush(key, value)
+        pipe.expire(key, time.expire)
+        pipe.execute()
         self.detectAttack(item)
 
     def refresh(self):
-        currentTime = time.time() # Caching
-        for kind in self._collections:
-            collection = self._collections[kind]
-            for item in collection:
-                if item.expire < currentTime:
-                    collection.remove(item)
+        pass
 
     def detectAttack(self, lastItem):
-        collection = self._collections[lastItem.kind]
+        key = '%s:%s:%s' % (item.kind, item.channel, item.prefix)
         prefix = lastItem.prefix
         channel = lastItem.channel
-        protector = lastItem.protector
+        detection = lastItem.protector
         kind = lastItem.kind
-        count = 0
-
-        for item in collection:
-            if item.prefix == prefix and item.channel == channel:
-                count += 1
-        detection = protector.registryValue(kind + '.detection', channel)
+        count = self._redis.llen(key)
+        
+        
         if count >= int(filterParser.match(detection).group('number')):
             protector._slot(lastItem)
-            for index, item in enumerate(collection):
-                if item.prefix == prefix and item.channel == channel:
-                    collection.pop(index)
-
+            self._redis.delete(key)
 
 class AttackProtector(callbacks.Plugin):
     """This plugin protects channels against spam and flood"""
