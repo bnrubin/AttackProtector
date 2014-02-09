@@ -56,6 +56,19 @@ except:
 
 filterParser=re.compile('(?P<number>[0-9]+)p(?P<seconds>[0-9]+)')
 
+
+def makeBanmask(hostmask):
+    banmaskstyle = conf.supybot.protocols.irc.banmask
+    
+    pattern = re.compile('^.*@gateway/.*/ip\.(.*)$')
+    p = pattern.match(hostmask)
+    if p:
+        ip = p.group(1)
+        (nick, user, host) = ircutils.splitHostmask(hostmask)
+        hostmask = '%s!%s@%s' (nick, user, ip)
+    
+    return banmaskstyle.makeBanmask(hostmask)
+
 class AttackProtectorDatabaseItem:
     def __init__(self, kind, prefix, channel, protector, irc, msg):
         self.kind = kind
@@ -197,8 +210,7 @@ class AttackProtector(callbacks.Plugin):
         if kind == 'kicked':
             reason = _('You exceeded your kick quota.')
 
-        banmaskstyle = conf.supybot.protocols.irc.banmask
-        banmask = banmaskstyle.makeBanmask(prefix)
+        banmask = makeBanmask(prefix)
         if punishment == 'kick':
             msg = ircmsgs.kick(channel, nick, reason)
             irc.queueMsg(msg)

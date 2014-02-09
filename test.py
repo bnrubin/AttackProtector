@@ -232,6 +232,14 @@ class AttackProtectorTestCase(ChannelPluginTestCase):
             self.assertEqual(m.command, 'MODE')
         schedule.schedule.schedule = False
 
+    def testGateway(self):
+        prefix = 'test!user@gateway/foo/bar/baz/ip.1.2.3.4'
+        for i in range(1, 11):
+            msg = ircmsgs.privmsg(self.channel, 'Hi, this is a flood',
+                                  prefix=prefix)
+            self.irc.feedMsg(msg)
+        self.failIf(self._getIfAnswerIsEqual(ircmsgs.ban(self.channel,
+        'test!user@1.2.3.4')))
     #################################
     # 'Kicked' tests
     def testKbanAfterKicks(self):

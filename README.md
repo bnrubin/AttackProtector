@@ -11,6 +11,7 @@ Improvements over [ProgVal/Supybot-plugins/AttackProtector](https://github.com/P
   collection.
 * Event expiration leverages redis's [EXPIRE](http://redis.io/commands/expire) 
   so each event addition no longer needs to scan O(n) keys.
+* Ban host ip for freenode style gateway cloaks
 
 Detection types
 ---------------
