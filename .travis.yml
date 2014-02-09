@@ -11,3 +11,4 @@ install:
 script:
   - echo $TRAVIS_PYTHON_VERSION
   - cd .. && supybot-test AttackProtector
+  - cat test-logs/messages.log
