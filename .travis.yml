@@ -11,5 +11,4 @@ install:
 script:
   - echo $TRAVIS_PYTHON_VERSION
   - cd .. && supybot-test AttackProtector
-
-  - echo "travis_fold:start:#{messages}" && cat "test-logs/messages.log" && echo "travis_fold:end:#{messages}"
+  - echo "travis_fold:start:supybot_log" && cat "test-logs/messages.log" && echo "travis_fold:end:supybot_log"
