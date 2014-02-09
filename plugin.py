@@ -62,23 +62,24 @@ class AttackProtectorDatabaseItem:
         self.prefix = prefix
         self.channel = channel
         self.time = time.time()
-        self.protector = protector.registryValue(kind + '.detection', channel)
+        self.protector = protector
         value = protector.registryValue('%s.detection' % kind, channel)
         self.irc = irc
         self.msg = msg
         parsed = filterParser.match(value)
-        self.expire = self.time + int(parsed.group('seconds'))
+        self.expire = int(parsed.group('seconds'))
 
 class AttackProtectorDatabase:
     def __init__(self):
         self._redis = redis.StrictRedis()
+        self._redis.flushdb()
 
     def add(self, item):
         key = '%s:%s:%s' % (item.kind, item.channel, item.prefix)
-        value = {'msg': item.msg}
+        value = item.msg
         pipe = self._redis.pipeline()
         pipe.rpush(key, value)
-        pipe.expire(key, time.expire)
+        pipe.expire(key, item.expire)
         pipe.execute()
         self.detectAttack(item)
 
@@ -86,14 +87,14 @@ class AttackProtectorDatabase:
         pass
 
     def detectAttack(self, lastItem):
-        key = '%s:%s:%s' % (item.kind, item.channel, item.prefix)
+        key = '%s:%s:%s' % (lastItem.kind, lastItem.channel, lastItem.prefix)
         prefix = lastItem.prefix
         channel = lastItem.channel
-        detection = lastItem.protector
+        protector = lastItem.protector
         kind = lastItem.kind
         count = self._redis.llen(key)
-        
-        
+
+        detection = protector.registryValue(kind + '.detection', channel)
         if count >= int(filterParser.match(detection).group('number')):
             protector._slot(lastItem)
             self._redis.delete(key)
